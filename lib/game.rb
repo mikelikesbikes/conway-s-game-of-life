@@ -13,6 +13,9 @@ class Game
   def is_alive?(*cell)
     @live_cells.include?(cell) 
   end
+  def live_cell_count
+    @live_cells.length
+  end
 
   private
 
@@ -29,9 +32,11 @@ class Game
   def stay_alive?(live_neighbors)
     live_neighbors >= 2 && live_neighbors <= 3
   end
+
   def become_alive?(live_neighbors)
     live_neighbors == 3
   end
+
   def dead_neighbors(live_cells)
     live_cells.inject([]) do |neighbors, cell| 
       neighbors | Space.neighbors(*cell)
