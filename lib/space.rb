@@ -15,4 +15,10 @@ class Space
   def self.live_neighbors(live_cells, *coords)
     neighbors(*coords).select{|cell| live_cells.include? cell}.length
   end
+
+  def self.dead_neighbors(live_cells)
+    live_cells.inject([]) do |neighbors, cell| 
+      neighbors | Space.neighbors(*cell)
+    end - live_cells
+  end
 end

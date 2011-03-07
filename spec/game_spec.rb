@@ -8,58 +8,26 @@ describe Game do
       it { subject.live_cell_count.should == 0 }
     end
     context "with live cells" do
-      subject { Game.new([0,0]) }
+      subject { Game.new(:live_cells => [[0,0]]) }
       it { should_not be_empty }
       it { subject.live_cell_count.should == 1 }
     end
   end
 
   describe "turn!" do
-    before { subject.turn! }
-    context "with no live cells" do
-      subject { Game.new }
-      it { should be_empty }
-    end
-    context "death by under-population" do
-      subject { Game.new([0,0]) }
-      it { should be_empty }
-      it "[0, 0] should be dead" do
-        subject.is_alive?(0,0).should be_false
+    let(:rules_engine) { 
+      mock("StandardRules").tap do |mock|
+        mock.should_receive(:process).with(live_cells).and_return([])
       end
-    end
-    context "staying alive by 2 live neighbors" do
-      let(:cells) { [[0,0],[0,1],[0,2]] }
-      subject { Game.new(*cells) }
-      it { should_not be_empty }
-      it "[0, 1] should be alive" do
-        subject.is_alive?(0,1).should be_true
-      end
-    end
-    context "staying alive by 3 live neighbors" do
-      let(:cells) { [[0,1],[1,0],[1,1],[1,2]] }
-      subject { Game.new(*cells) }
-      it { should_not be_empty }
-      it "[1, 1] should be alive" do
-        subject.is_alive?(1,1).should be_true
-      end
-    end
-    context "death by over-population" do
-      subject { Game.new([0,1],[1,0],[1,1],[1,2],[0,2]) }
-      it { should_not be_empty }
-      it "[1, 1] should be dead" do
-        subject.is_alive?(1,1).should be_false
-      end
-    end
-    context "coming to life by reproduction" do
-      subject { Game.new([0,0],[1,0],[1,1]) }
-      it { should_not be_empty }
-      it "[0, 1] should be alive" do
-        subject.is_alive?(0,1).should be_true
-      end
+    }
+    let(:live_cells) { [[0,0]] }
+    subject { Game.new(:live_cells => live_cells, :rules_engine => rules_engine) }
+    it "should process the rules" do 
+      subject.turn!
     end
   end
   describe "interesting patterns" do
-    subject { Game.new(*cells) }
+    subject { Game.new(:live_cells => cells) }
     context "an oscillator" do
       let(:cells) { [[0,0],[0,1],[0,2]] }
       before { 2.times do subject.turn! end }
