@@ -1,3 +1,5 @@
+require 'set'
+
 class Space
   def self.neighbors(*coords)
     [
@@ -17,7 +19,7 @@ class Space
   end
 
   def self.dead_neighbors(live_cells)
-    live_cells.inject([]) do |neighbors, cell| 
+    live_cells.inject(Set.new) do |neighbors, cell| 
       neighbors | Space.neighbors(*cell)
     end - live_cells
   end
